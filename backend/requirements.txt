@@ -1,0 +1,11 @@
+Django>=5.2,<5.3
+djangorestframework>=3.16,<3.17
+django-cors-headers>=4.7,<5
+psycopg[binary]>=3.2,<4
+dj-database-url>=2.3,<4
+argon2-cffi>=23.1
+PyJWT>=2.8,<3
+python-dotenv>=1.0,<2
+tzdata
+Pillow>=10.4,<12
+reportlab>=4.2,<5

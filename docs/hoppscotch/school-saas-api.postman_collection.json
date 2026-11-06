@@ -1,0 +1,4511 @@
+{
+  "info": {
+    "_postman_id": "dfd46bce-c86f-4130-8c94-5407ef789581",
+    "name": "School SaaS API",
+    "description": "Complete local API request collection generated from Django routes. Cookie-based JWT plus CSRF; no Bearer token.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Health",
+      "item": [
+        {
+          "name": "GET health/",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/api/v1/health/",
+            "description": "Public health check; add ?db=1 to include a database probe."
+          }
+        }
+      ]
+    },
+    {
+      "name": "Public Plans",
+      "item": [
+        {
+          "name": "GET plans/",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/api/v1/plans/",
+            "description": "Public list of plans."
+          }
+        }
+      ]
+    },
+    {
+      "name": "Auth",
+      "item": [
+        {
+          "name": "Get CSRF token",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/api/v1/auth/csrf/",
+            "description": "Run first. Copy data.csrf_token from the response into csrfToken before unsafe requests."
+          }
+        },
+        {
+          "name": "POST auth/register/",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "X-CSRF-Token",
+                "value": "{{csrfToken}}"
+              }
+            ],
+            "url": "{{baseUrl}}/api/v1/auth/register/",
+            "description": "Creates a school and first admin; use only on a fresh development database.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"school_name\": \"Example School\",\n  \"admin_name\": \"School Admin\",\n  \"email\": \"{{email}}\",\n  \"phone\": \"\",\n  \"password\": \"SchoolSaaS!Local-2026\",\n  \"country\": \"Pakistan\",\n  \"city\": \"Lahore\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "Login",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "X-CSRF-Token",
+                "value": "{{csrfToken}}"
+              }
+            ],
+            "url": "{{baseUrl}}/api/v1/auth/login/",
+            "description": "Cookie-based login. Set the email/password environment variables; cookies must be retained.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"{{email}}\",\n  \"password\": \"{{password}}\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "POST auth/logout/",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "X-CSRF-Token",
+                "value": "{{csrfToken}}"
+              }
+            ],
+            "url": "{{baseUrl}}/api/v1/auth/logout/",
+            "description": "Requires authentication, and CSRF on unsafe requests.",
+            "body": {
+              "mode": "raw",
+              "raw": "{}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "POST auth/refresh/",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "X-CSRF-Token",
+                "value": "{{csrfToken}}"
+              }
+            ],
+            "url": "{{baseUrl}}/api/v1/auth/refresh/",
+            "description": "Requires authentication, and CSRF on unsafe requests.",
+            "body": {
+              "mode": "raw",
+              "raw": "{}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "GET auth/me/",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/api/v1/auth/me/",
+            "description": "Requires authentication, and CSRF on unsafe requests."
+          }
+        },
+        {
+          "name": "POST auth/change-password/",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "X-CSRF-Token",
+                "value": "{{csrfToken}}"
+              }
+            ],
+            "url": "{{baseUrl}}/api/v1/auth/change-password/",
+            "description": "Requires authentication, and CSRF on unsafe requests.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"current_password\": \"{{password}}\",\n  \"new_password\": \"ReplaceWithNew!2026\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "POST auth/password-reset/request/",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "X-CSRF-Token",
+                "value": "{{csrfToken}}"
+              }
+            ],
+            "url": "{{baseUrl}}/api/v1/auth/password-reset/request/",
+            "description": "Requires authentication, and CSRF on unsafe requests.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"{{email}}\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "POST auth/password-reset/confirm/",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "X-CSRF-Token",
+                "value": "{{csrfToken}}"
+              }
+            ],
+            "url": "{{baseUrl}}/api/v1/auth/password-reset/confirm/",
+            "description": "Requires authentication, and CSRF on unsafe requests.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"token\": \"replace-with-token-from-email\",\n  \"new_password\": \"ReplaceWithNew!2026\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "School - Dashboard & Profile",
+      "item": [
+        {
+          "name": "GET school/profile/",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/api/v1/school/profile/",
+            "description": "Requires authentication, and CSRF on unsafe requests."
+          }
+        },
+        {
+          "name": "PATCH school/profile/",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "X-CSRF-Token",
+                "value": "{{csrfToken}}"
+              }
+            ],
+            "url": "{{baseUrl}}/api/v1/school/profile/",
+            "description": "Requires authentication, and CSRF on unsafe requests.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Example School\",\n  \"email\": \"school@example.com\",\n  \"phone\": \"\",\n  \"country\": \"Pakistan\",\n  \"city\": \"Lahore\",\n  \"address\": \"\",\n  \"timezone\": \"Asia/Karachi\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "GET school/images/{{schoolImageId}}/",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/api/v1/school/images/{{schoolImageId}}/",
+            "description": "Replace sample ID variables with IDs returned by the API."
+          }
+        },
+        {
+          "name": "GET school/dashboard/",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/api/v1/school/dashboard/",
+            "description": "Requires authentication, and CSRF on unsafe requests."
+          }
+        }
+      ]
+    },
+    {
+      "name": "School - Users",
+      "item": [
+        {
+          "name": "GET school/users/",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/api/v1/school/users/",
+            "description": "Requires authentication, and CSRF on unsafe requests."
+          }
+        },
+        {
+          "name": "POST school/users/",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "X-CSRF-Token",
+                "value": "{{csrfToken}}"
+              }
+            ],
+            "url": "{{baseUrl}}/api/v1/school/users/",
+            "description": "Requires authentication, and CSRF on unsafe requests.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"new-user@example.com\",\n  \"first_name\": \"New\",\n  \"last_name\": \"User\",\n  \"phone\": \"\",\n  \"role\": \"TEACHER\",\n  \"password\": \"ReplaceMe!2026\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "GET school/users/{{userId}}/",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/api/v1/school/users/{{userId}}/",
+            "description": "Replace sample ID variables with IDs returned by the API."
+          }
+        },
+        {
+          "name": "PATCH school/users/{{userId}}/",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "X-CSRF-Token",
+                "value": "{{csrfToken}}"
+              }
+            ],
+            "url": "{{baseUrl}}/api/v1/school/users/{{userId}}/",
+            "description": "Replace sample ID variables with IDs returned by the API.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"first_name\": \"Updated\",\n  \"last_name\": \"User\",\n  \"phone\": \"\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "School - Audit Logs",
+      "item": [
+        {
+          "name": "GET school/audit-logs/",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/api/v1/school/audit-logs/",
+            "description": "Requires authentication, and CSRF on unsafe requests."
+          }
+        },
+        {
+          "name": "GET school/audit-logs/{{auditLogId}}/",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/api/v1/school/audit-logs/{{auditLogId}}/",
+            "description": "Replace sample ID variables with IDs returned by the API."
+          }
+        }
+      ]
+    },
+    {
+      "name": "School - Students & Guardians",
+      "item": [
+        {
+          "name": "GET school/students/",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/api/v1/school/students/",
+            "description": "Requires authentication, and CSRF on unsafe requests."
+          }
+        },
+        {
+          "name": "POST school/students/",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "X-CSRF-Token",
+                "value": "{{csrfToken}}"
+              }
+            ],
+            "url": "{{baseUrl}}/api/v1/school/students/",
+            "description": "Requires authentication, and CSRF on unsafe requests.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"first_name\": \"Ayesha\",\n  \"last_name\": \"Khan\",\n  \"date_of_birth\": \"2015-05-10\",\n  \"gender\": \"FEMALE\",\n  \"admission_date\": \"2026-01-15\",\n  \"phone\": \"\",\n  \"email\": \"\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "GET school/students/{{studentId}}/",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/api/v1/school/students/{{studentId}}/",
+            "description": "Replace sample ID variables with IDs returned by the API."
+          }
+        },
+        {
+          "name": "PATCH school/students/{{studentId}}/",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "X-CSRF-Token",
+                "value": "{{csrfToken}}"
+              }
+            ],
+            "url": "{{baseUrl}}/api/v1/school/students/{{studentId}}/",
+            "description": "Replace sample ID variables with IDs returned by the API.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"first_name\": \"Ayesha\",\n  \"last_name\": \"Khan\",\n  \"date_of_birth\": \"2015-05-10\",\n  \"gender\": \"FEMALE\",\n  \"admission_date\": \"2026-01-15\",\n  \"phone\": \"\",\n  \"email\": \"\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "DELETE school/students/{{studentId}}/",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "X-CSRF-Token",
+                "value": "{{csrfToken}}"
+              }
+            ],
+            "url": "{{baseUrl}}/api/v1/school/students/{{studentId}}/",
+            "description": "Replace sample ID variables with IDs returned by the API."
+          }
+        },
+        {
+          "name": "POST school/students/{{studentId}}/change-status/",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "X-CSRF-Token",
+                "value": "{{csrfToken}}"
+              }
+            ],
+            "url": "{{baseUrl}}/api/v1/school/students/{{studentId}}/change-status/",
+            "description": "Replace sample ID variables with IDs returned by the API.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"status\": \"ACTIVE\",\n  \"reason\": \"Status update from API test\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "GET school/students/{{studentId}}/guardians/",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/api/v1/school/students/{{studentId}}/guardians/",
+            "description": "Replace sample ID variables with IDs returned by the API."
+          }
+        },
+        {
+          "name": "POST school/students/{{studentId}}/guardians/",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "X-CSRF-Token",
+                "value": "{{csrfToken}}"
+              }
+            ],
+            "url": "{{baseUrl}}/api/v1/school/students/{{studentId}}/guardians/",
+            "description": "Replace sample ID variables with IDs returned by the API.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"new_guardian\": {\n    \"first_name\": \"Parent\",\n    \"last_name\": \"Khan\",\n    \"phone\": \"+923001234567\",\n    \"email\": \"parent@example.com\"\n  },\n  \"relationship\": \"GUARDIAN\",\n  \"is_primary\": true,\n  \"is_emergency_contact\": true\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "DELETE school/students/{{studentId}}/guardians/{{studentLinkId}}/",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "X-CSRF-Token",
+                "value": "{{csrfToken}}"
+              }
+            ],
+            "url": "{{baseUrl}}/api/v1/school/students/{{studentId}}/guardians/{{studentLinkId}}/",
+            "description": "Replace sample ID variables with IDs returned by the API."
+          }
+        },
+        {
+          "name": "GET school/guardians/",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/api/v1/school/guardians/",
+            "description": "Requires authentication, and CSRF on unsafe requests."
+          }
+        },
+        {
+          "name": "POST school/guardians/",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "X-CSRF-Token",
+                "value": "{{csrfToken}}"
+              }
+            ],
+            "url": "{{baseUrl}}/api/v1/school/guardians/",
+            "description": "Requires authentication, and CSRF on unsafe requests.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"first_name\": \"Parent\",\n  \"last_name\": \"Khan\",\n  \"phone\": \"+923001234567\",\n  \"email\": \"parent@example.com\",\n  \"national_id\": \"\",\n  \"occupation\": \"\",\n  \"address\": \"\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "GET school/guardians/{{guardianId}}/",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/api/v1/school/guardians/{{guardianId}}/",
+            "description": "Replace sample ID variables with IDs returned by the API."
+          }
+        },
+        {
+          "name": "PATCH school/guardians/{{guardianId}}/",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "X-CSRF-Token",
+                "value": "{{csrfToken}}"
+              }
+            ],
+            "url": "{{baseUrl}}/api/v1/school/guardians/{{guardianId}}/",
+            "description": "Replace sample ID variables with IDs returned by the API.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"first_name\": \"Parent\",\n  \"last_name\": \"Khan\",\n  \"phone\": \"+923001234567\",\n  \"email\": \"parent@example.com\",\n  \"national_id\": \"\",\n  \"occupation\": \"\",\n  \"address\": \"\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "DELETE school/guardians/{{guardianId}}/",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "X-CSRF-Token",
+                "value": "{{csrfToken}}"
+              }
+            ],
+            "url": "{{baseUrl}}/api/v1/school/guardians/{{guardianId}}/",
+            "description": "Replace sample ID variables with IDs returned by the API."
+          }
+        },
+        {
+          "name": "GET school/student-documents/",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/api/v1/school/student-documents/",
+            "description": "Requires authentication, and CSRF on unsafe requests."
+          }
+        },
+        {
+          "name": "POST school/student-documents/",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "X-CSRF-Token",
+                "value": "{{csrfToken}}"
+              }
+            ],
+            "url": "{{baseUrl}}/api/v1/school/student-documents/",
+            "description": "Requires authentication, and CSRF on unsafe requests.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"student\": \"{{studentId}}\",\n  \"doc_type\": \"B-Form\",\n  \"title\": \"Birth certificate\",\n  \"received_on\": \"2026-11-04\",\n  \"notes\": \"\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "GET school/student-documents/{{documentId}}/",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/api/v1/school/student-documents/{{documentId}}/",
+            "description": "Replace sample ID variables with IDs returned by the API."
+          }
+        },
+        {
+          "name": "PATCH school/student-documents/{{documentId}}/",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "X-CSRF-Token",
+                "value": "{{csrfToken}}"
+              }
+            ],
+            "url": "{{baseUrl}}/api/v1/school/student-documents/{{documentId}}/",
+            "description": "Replace sample ID variables with IDs returned by the API.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"student\": \"{{studentId}}\",\n  \"doc_type\": \"B-Form\",\n  \"title\": \"Birth certificate\",\n  \"received_on\": \"2026-11-04\",\n  \"notes\": \"\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "DELETE school/student-documents/{{documentId}}/",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "X-CSRF-Token",
+                "value": "{{csrfToken}}"
+              }
+            ],
+            "url": "{{baseUrl}}/api/v1/school/student-documents/{{documentId}}/",
+            "description": "Replace sample ID variables with IDs returned by the API."
+          }
+        },
+        {
+          "name": "GET school/students/{{studentId}}/certificate/pdf/",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/api/v1/school/students/{{studentId}}/certificate/pdf/",
+            "description": "Replace sample ID variables with IDs returned by the API."
+          }
+        }
+      ]
+    },
+    {
+      "name": "School - Teachers",
+      "item": [
+        {
+          "name": "GET school/teachers/",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/api/v1/school/teachers/",
+            "description": "Requires authentication, and CSRF on unsafe requests."
+          }
+        },
+        {
+          "name": "POST school/teachers/",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "X-CSRF-Token",
+                "value": "{{csrfToken}}"
+              }
+            ],
+            "url": "{{baseUrl}}/api/v1/school/teachers/",
+            "description": "Requires authentication, and CSRF on unsafe requests.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"first_name\": \"Ali\",\n  \"last_name\": \"Ahmed\",\n  \"gender\": \"MALE\",\n  \"date_of_birth\": \"1990-01-01\",\n  \"phone\": \"+923001234567\",\n  \"email\": \"teacher@example.com\",\n  \"address\": \"\",\n  \"qualification\": \"B.Ed\",\n  \"joining_date\": \"2026-01-01\",\n  \"status\": \"ACTIVE\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "GET school/teachers/{{teacherId}}/",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/api/v1/school/teachers/{{teacherId}}/",
+            "description": "Replace sample ID variables with IDs returned by the API."
+          }
+        },
+        {
+          "name": "PATCH school/teachers/{{teacherId}}/",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "X-CSRF-Token",
+                "value": "{{csrfToken}}"
+              }
+            ],
+            "url": "{{baseUrl}}/api/v1/school/teachers/{{teacherId}}/",
+            "description": "Replace sample ID variables with IDs returned by the API.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"first_name\": \"Ali\",\n  \"last_name\": \"Ahmed\",\n  \"gender\": \"MALE\",\n  \"date_of_birth\": \"1990-01-01\",\n  \"phone\": \"+923001234567\",\n  \"email\": \"teacher@example.com\",\n  \"address\": \"\",\n  \"qualification\": \"B.Ed\",\n  \"joining_date\": \"2026-01-01\",\n  \"status\": \"ACTIVE\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "DELETE school/teachers/{{teacherId}}/",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "X-CSRF-Token",
+                "value": "{{csrfToken}}"
+              }
+            ],
+            "url": "{{baseUrl}}/api/v1/school/teachers/{{teacherId}}/",
+            "description": "Replace sample ID variables with IDs returned by the API."
+          }
+        }
+      ]
+    },
+    {
+      "name": "School - Academics",
+      "item": [
+        {
+          "name": "GET school/sessions/",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/api/v1/school/sessions/",
+            "description": "Requires authentication, and CSRF on unsafe requests."
+          }
+        },
+        {
+          "name": "POST school/sessions/",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "X-CSRF-Token",
+                "value": "{{csrfToken}}"
+              }
+            ],
+            "url": "{{baseUrl}}/api/v1/school/sessions/",
+            "description": "Requires authentication, and CSRF on unsafe requests.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"2026-2027\",\n  \"start_date\": \"2026-04-01\",\n  \"end_date\": \"2027-03-31\",\n  \"is_current\": true\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "GET school/sessions/{{sessionId}}/",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/api/v1/school/sessions/{{sessionId}}/",
+            "description": "Replace sample ID variables with IDs returned by the API."
+          }
+        },
+        {
+          "name": "PATCH school/sessions/{{sessionId}}/",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "X-CSRF-Token",
+                "value": "{{csrfToken}}"
+              }
+            ],
+            "url": "{{baseUrl}}/api/v1/school/sessions/{{sessionId}}/",
+            "description": "Replace sample ID variables with IDs returned by the API.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"2026-2027\",\n  \"start_date\": \"2026-04-01\",\n  \"end_date\": \"2027-03-31\",\n  \"is_current\": true\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "DELETE school/sessions/{{sessionId}}/",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "X-CSRF-Token",
+                "value": "{{csrfToken}}"
+              }
+            ],
+            "url": "{{baseUrl}}/api/v1/school/sessions/{{sessionId}}/",
+            "description": "Replace sample ID variables with IDs returned by the API."
+          }
+        },
+        {
+          "name": "GET school/classes/",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/api/v1/school/classes/",
+            "description": "Requires authentication, and CSRF on unsafe requests."
+          }
+        },
+        {
+          "name": "POST school/classes/",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "X-CSRF-Token",
+                "value": "{{csrfToken}}"
+              }
+            ],
+            "url": "{{baseUrl}}/api/v1/school/classes/",
+            "description": "Requires authentication, and CSRF on unsafe requests.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Grade 1\",\n  \"level_order\": 1\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "GET school/classes/{{classId}}/",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/api/v1/school/classes/{{classId}}/",
+            "description": "Replace sample ID variables with IDs returned by the API."
+          }
+        },
+        {
+          "name": "PATCH school/classes/{{classId}}/",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "X-CSRF-Token",
+                "value": "{{csrfToken}}"
+              }
+            ],
+            "url": "{{baseUrl}}/api/v1/school/classes/{{classId}}/",
+            "description": "Replace sample ID variables with IDs returned by the API.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Grade 1\",\n  \"level_order\": 1\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "DELETE school/classes/{{classId}}/",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "X-CSRF-Token",
+                "value": "{{csrfToken}}"
+              }
+            ],
+            "url": "{{baseUrl}}/api/v1/school/classes/{{classId}}/",
+            "description": "Replace sample ID variables with IDs returned by the API."
+          }
+        },
+        {
+          "name": "GET school/sections/",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/api/v1/school/sections/",
+            "description": "Requires authentication, and CSRF on unsafe requests."
+          }
+        },
+        {
+          "name": "POST school/sections/",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "X-CSRF-Token",
+                "value": "{{csrfToken}}"
+              }
+            ],
+            "url": "{{baseUrl}}/api/v1/school/sections/",
+            "description": "Requires authentication, and CSRF on unsafe requests.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"school_class\": \"{{classId}}\",\n  \"name\": \"A\",\n  \"capacity\": 30,\n  \"class_teacher\": null\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "GET school/sections/{{sectionId}}/",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/api/v1/school/sections/{{sectionId}}/",
+            "description": "Replace sample ID variables with IDs returned by the API."
+          }
+        },
+        {
+          "name": "PATCH school/sections/{{sectionId}}/",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "X-CSRF-Token",
+                "value": "{{csrfToken}}"
+              }
+            ],
+            "url": "{{baseUrl}}/api/v1/school/sections/{{sectionId}}/",
+            "description": "Replace sample ID variables with IDs returned by the API.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"school_class\": \"{{classId}}\",\n  \"name\": \"A\",\n  \"capacity\": 30,\n  \"class_teacher\": null\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "DELETE school/sections/{{sectionId}}/",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "X-CSRF-Token",
+                "value": "{{csrfToken}}"
+              }
+            ],
+            "url": "{{baseUrl}}/api/v1/school/sections/{{sectionId}}/",
+            "description": "Replace sample ID variables with IDs returned by the API."
+          }
+        },
+        {
+          "name": "GET school/subjects/",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/api/v1/school/subjects/",
+            "description": "Requires authentication, and CSRF on unsafe requests."
+          }
+        },
+        {
+          "name": "POST school/subjects/",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "X-CSRF-Token",
+                "value": "{{csrfToken}}"
+              }
+            ],
+            "url": "{{baseUrl}}/api/v1/school/subjects/",
+            "description": "Requires authentication, and CSRF on unsafe requests.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Mathematics\",\n  \"code\": \"MATH\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "GET school/subjects/{{subjectId}}/",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/api/v1/school/subjects/{{subjectId}}/",
+            "description": "Replace sample ID variables with IDs returned by the API."
+          }
+        },
+        {
+          "name": "PATCH school/subjects/{{subjectId}}/",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "X-CSRF-Token",
+                "value": "{{csrfToken}}"
+              }
+            ],
+            "url": "{{baseUrl}}/api/v1/school/subjects/{{subjectId}}/",
+            "description": "Replace sample ID variables with IDs returned by the API.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Mathematics\",\n  \"code\": \"MATH\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "DELETE school/subjects/{{subjectId}}/",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "X-CSRF-Token",
+                "value": "{{csrfToken}}"
+              }
+            ],
+            "url": "{{baseUrl}}/api/v1/school/subjects/{{subjectId}}/",
+            "description": "Replace sample ID variables with IDs returned by the API."
+          }
+        },
+        {
+          "name": "GET school/class-subjects/",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/api/v1/school/class-subjects/",
+            "description": "Requires authentication, and CSRF on unsafe requests."
+          }
+        },
+        {
+          "name": "POST school/class-subjects/",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "X-CSRF-Token",
+                "value": "{{csrfToken}}"
+              }
+            ],
+            "url": "{{baseUrl}}/api/v1/school/class-subjects/",
+            "description": "Requires authentication, and CSRF on unsafe requests.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"school_class\": \"{{classId}}\",\n  \"subject\": \"{{subjectId}}\",\n  \"is_optional\": false\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "GET school/class-subjects/{{classSubjectId}}/",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/api/v1/school/class-subjects/{{classSubjectId}}/",
+            "description": "Replace sample ID variables with IDs returned by the API."
+          }
+        },
+        {
+          "name": "PATCH school/class-subjects/{{classSubjectId}}/",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "X-CSRF-Token",
+                "value": "{{csrfToken}}"
+              }
+            ],
+            "url": "{{baseUrl}}/api/v1/school/class-subjects/{{classSubjectId}}/",
+            "description": "Replace sample ID variables with IDs returned by the API.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"school_class\": \"{{classId}}\",\n  \"subject\": \"{{subjectId}}\",\n  \"is_optional\": false\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "DELETE school/class-subjects/{{classSubjectId}}/",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "X-CSRF-Token",
+                "value": "{{csrfToken}}"
+              }
+            ],
+            "url": "{{baseUrl}}/api/v1/school/class-subjects/{{classSubjectId}}/",
+            "description": "Replace sample ID variables with IDs returned by the API."
+          }
+        },
+        {
+          "name": "GET school/teacher-assignments/",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/api/v1/school/teacher-assignments/",
+            "description": "Requires authentication, and CSRF on unsafe requests."
+          }
+        },
+        {
+          "name": "POST school/teacher-assignments/",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "X-CSRF-Token",
+                "value": "{{csrfToken}}"
+              }
+            ],
+            "url": "{{baseUrl}}/api/v1/school/teacher-assignments/",
+            "description": "Requires authentication, and CSRF on unsafe requests.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"session\": \"{{sessionId}}\",\n  \"teacher\": \"{{teacherId}}\",\n  \"section\": \"{{sectionId}}\",\n  \"subject\": \"{{subjectId}}\",\n  \"is_class_teacher\": false\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "GET school/teacher-assignments/{{teacherAssignmentId}}/",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/api/v1/school/teacher-assignments/{{teacherAssignmentId}}/",
+            "description": "Replace sample ID variables with IDs returned by the API."
+          }
+        },
+        {
+          "name": "PATCH school/teacher-assignments/{{teacherAssignmentId}}/",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "X-CSRF-Token",
+                "value": "{{csrfToken}}"
+              }
+            ],
+            "url": "{{baseUrl}}/api/v1/school/teacher-assignments/{{teacherAssignmentId}}/",
+            "description": "Replace sample ID variables with IDs returned by the API.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"session\": \"{{sessionId}}\",\n  \"teacher\": \"{{teacherId}}\",\n  \"section\": \"{{sectionId}}\",\n  \"subject\": \"{{subjectId}}\",\n  \"is_class_teacher\": false\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "DELETE school/teacher-assignments/{{teacherAssignmentId}}/",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "X-CSRF-Token",
+                "value": "{{csrfToken}}"
+              }
+            ],
+            "url": "{{baseUrl}}/api/v1/school/teacher-assignments/{{teacherAssignmentId}}/",
+            "description": "Replace sample ID variables with IDs returned by the API."
+          }
+        },
+        {
+          "name": "GET school/enrollments/",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/api/v1/school/enrollments/",
+            "description": "Requires authentication, and CSRF on unsafe requests."
+          }
+        },
+        {
+          "name": "POST school/enrollments/",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "X-CSRF-Token",
+                "value": "{{csrfToken}}"
+              }
+            ],
+            "url": "{{baseUrl}}/api/v1/school/enrollments/",
+            "description": "Requires authentication, and CSRF on unsafe requests.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"student\": \"{{studentId}}\",\n  \"section\": \"{{sectionId}}\",\n  \"roll_number\": 1\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "POST school/enrollments/promote/",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "X-CSRF-Token",
+                "value": "{{csrfToken}}"
+              }
+            ],
+            "url": "{{baseUrl}}/api/v1/school/enrollments/promote/",
+            "description": "Requires authentication, and CSRF on unsafe requests.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"from_session\": \"{{targetSessionId}}\",\n  \"to_session\": \"{{targetSessionId}}\",\n  \"promote_to\": \"{{sectionId}}\",\n  \"decisions\": [\n    {\n      \"enrollment\": \"{{enrollmentId}}\",\n      \"outcome\": \"PROMOTE\"\n    }\n  ]\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "GET school/enrollments/{{enrollmentId}}/",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/api/v1/school/enrollments/{{enrollmentId}}/",
+            "description": "Replace sample ID variables with IDs returned by the API."
+          }
+        },
+        {
+          "name": "PATCH school/enrollments/{{enrollmentId}}/",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "X-CSRF-Token",
+                "value": "{{csrfToken}}"
+              }
+            ],
+            "url": "{{baseUrl}}/api/v1/school/enrollments/{{enrollmentId}}/",
+            "description": "Replace sample ID variables with IDs returned by the API.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"section\": \"{{sectionId}}\",\n  \"roll_number\": 1\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "GET school/timetable/",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/api/v1/school/timetable/",
+            "description": "Requires authentication, and CSRF on unsafe requests."
+          }
+        },
+        {
+          "name": "POST school/timetable/",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "X-CSRF-Token",
+                "value": "{{csrfToken}}"
+              }
+            ],
+            "url": "{{baseUrl}}/api/v1/school/timetable/",
+            "description": "Requires authentication, and CSRF on unsafe requests.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"session\": \"{{sessionId}}\",\n  \"section\": \"{{sectionId}}\",\n  \"subject\": \"{{subjectId}}\",\n  \"teacher\": \"{{teacherId}}\",\n  \"weekday\": 0,\n  \"period_no\": 1,\n  \"start_time\": \"08:00:00\",\n  \"end_time\": \"08:45:00\",\n  \"room\": \"A1\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "GET school/timetable/{{timetableId}}/",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/api/v1/school/timetable/{{timetableId}}/",
+            "description": "Replace sample ID variables with IDs returned by the API."
+          }
+        },
+        {
+          "name": "PATCH school/timetable/{{timetableId}}/",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "X-CSRF-Token",
+                "value": "{{csrfToken}}"
+              }
+            ],
+            "url": "{{baseUrl}}/api/v1/school/timetable/{{timetableId}}/",
+            "description": "Replace sample ID variables with IDs returned by the API.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"session\": \"{{sessionId}}\",\n  \"section\": \"{{sectionId}}\",\n  \"subject\": \"{{subjectId}}\",\n  \"teacher\": \"{{teacherId}}\",\n  \"weekday\": 0,\n  \"period_no\": 1,\n  \"start_time\": \"08:00:00\",\n  \"end_time\": \"08:45:00\",\n  \"room\": \"A1\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "DELETE school/timetable/{{timetableId}}/",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "X-CSRF-Token",
+                "value": "{{csrfToken}}"
+              }
+            ],
+            "url": "{{baseUrl}}/api/v1/school/timetable/{{timetableId}}/",
+            "description": "Replace sample ID variables with IDs returned by the API."
+          }
+        }
+      ]
+    },
+    {
+      "name": "School - Attendance",
+      "item": [
+        {
+          "name": "GET school/attendance/roster/",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/api/v1/school/attendance/roster/",
+            "description": "Requires authentication, and CSRF on unsafe requests."
+          }
+        },
+        {
+          "name": "POST school/attendance/mark/",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "X-CSRF-Token",
+                "value": "{{csrfToken}}"
+              }
+            ],
+            "url": "{{baseUrl}}/api/v1/school/attendance/mark/",
+            "description": "Requires authentication, and CSRF on unsafe requests.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"section\": \"{{sectionId}}\",\n  \"date\": \"2026-11-04\",\n  \"records\": [\n    {\n      \"student\": \"{{studentId}}\",\n      \"status\": \"PRESENT\",\n      \"remarks\": \"\"\n    }\n  ]\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "GET school/attendance/monthly/",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/api/v1/school/attendance/monthly/",
+            "description": "Requires authentication, and CSRF on unsafe requests."
+          }
+        },
+        {
+          "name": "GET school/attendance/teachers/",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/api/v1/school/attendance/teachers/",
+            "description": "Requires authentication, and CSRF on unsafe requests."
+          }
+        },
+        {
+          "name": "POST school/attendance/teachers/",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "X-CSRF-Token",
+                "value": "{{csrfToken}}"
+              }
+            ],
+            "url": "{{baseUrl}}/api/v1/school/attendance/teachers/",
+            "description": "Requires authentication, and CSRF on unsafe requests.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"date\": \"2026-11-04\",\n  \"records\": [\n    {\n      \"teacher\": \"{{teacherId}}\",\n      \"status\": \"PRESENT\",\n      \"check_in\": \"08:00:00\",\n      \"check_out\": \"16:00:00\",\n      \"remarks\": \"\"\n    }\n  ]\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "GET school/attendance/records/",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/api/v1/school/attendance/records/",
+            "description": "Requires authentication, and CSRF on unsafe requests."
+          }
+        },
+        {
+          "name": "GET school/attendance/teacher-records/",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/api/v1/school/attendance/teacher-records/",
+            "description": "Requires authentication, and CSRF on unsafe requests."
+          }
+        }
+      ]
+    },
+    {
+      "name": "School - Examinations & Results",
+      "item": [
+        {
+          "name": "GET school/results/transcript/{{studentId}}/",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/api/v1/school/results/transcript/{{studentId}}/",
+            "description": "Replace sample ID variables with IDs returned by the API."
+          }
+        },
+        {
+          "name": "GET school/exam-types/",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/api/v1/school/exam-types/",
+            "description": "Requires authentication, and CSRF on unsafe requests."
+          }
+        },
+        {
+          "name": "POST school/exam-types/",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "X-CSRF-Token",
+                "value": "{{csrfToken}}"
+              }
+            ],
+            "url": "{{baseUrl}}/api/v1/school/exam-types/",
+            "description": "Requires authentication, and CSRF on unsafe requests.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Mid Term\",\n  \"weightage\": \"50.00\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "GET school/exam-types/{{examTypeId}}/",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/api/v1/school/exam-types/{{examTypeId}}/",
+            "description": "Replace sample ID variables with IDs returned by the API."
+          }
+        },
+        {
+          "name": "PATCH school/exam-types/{{examTypeId}}/",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "X-CSRF-Token",
+                "value": "{{csrfToken}}"
+              }
+            ],
+            "url": "{{baseUrl}}/api/v1/school/exam-types/{{examTypeId}}/",
+            "description": "Replace sample ID variables with IDs returned by the API.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Mid Term\",\n  \"weightage\": \"50.00\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "DELETE school/exam-types/{{examTypeId}}/",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "X-CSRF-Token",
+                "value": "{{csrfToken}}"
+              }
+            ],
+            "url": "{{baseUrl}}/api/v1/school/exam-types/{{examTypeId}}/",
+            "description": "Replace sample ID variables with IDs returned by the API."
+          }
+        },
+        {
+          "name": "GET school/grading-scales/",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/api/v1/school/grading-scales/",
+            "description": "Requires authentication, and CSRF on unsafe requests."
+          }
+        },
+        {
+          "name": "POST school/grading-scales/",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "X-CSRF-Token",
+                "value": "{{csrfToken}}"
+              }
+            ],
+            "url": "{{baseUrl}}/api/v1/school/grading-scales/",
+            "description": "Requires authentication, and CSRF on unsafe requests.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Default grading\",\n  \"is_default\": true,\n  \"bands\": [\n    {\n      \"grade\": \"A\",\n      \"min_percent\": \"80.00\",\n      \"max_percent\": \"100.00\",\n      \"gpa_points\": \"4.00\",\n      \"remark\": \"Excellent\",\n      \"is_pass\": true\n    }\n  ]\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "GET school/grading-scales/{{gradingScaleId}}/",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/api/v1/school/grading-scales/{{gradingScaleId}}/",
+            "description": "Replace sample ID variables with IDs returned by the API."
+          }
+        },
+        {
+          "name": "PATCH school/grading-scales/{{gradingScaleId}}/",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "X-CSRF-Token",
+                "value": "{{csrfToken}}"
+              }
+            ],
+            "url": "{{baseUrl}}/api/v1/school/grading-scales/{{gradingScaleId}}/",
+            "description": "Replace sample ID variables with IDs returned by the API.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Default grading\",\n  \"is_default\": true,\n  \"bands\": [\n    {\n      \"grade\": \"A\",\n      \"min_percent\": \"80.00\",\n      \"max_percent\": \"100.00\",\n      \"gpa_points\": \"4.00\",\n      \"remark\": \"Excellent\",\n      \"is_pass\": true\n    }\n  ]\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "DELETE school/grading-scales/{{gradingScaleId}}/",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "X-CSRF-Token",
+                "value": "{{csrfToken}}"
+              }
+            ],
+            "url": "{{baseUrl}}/api/v1/school/grading-scales/{{gradingScaleId}}/",
+            "description": "Replace sample ID variables with IDs returned by the API."
+          }
+        },
+        {
+          "name": "GET school/exams/",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/api/v1/school/exams/",
+            "description": "Requires authentication, and CSRF on unsafe requests."
+          }
+        },
+        {
+          "name": "POST school/exams/",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "X-CSRF-Token",
+                "value": "{{csrfToken}}"
+              }
+            ],
+            "url": "{{baseUrl}}/api/v1/school/exams/",
+            "description": "Requires authentication, and CSRF on unsafe requests.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Mid Term 2026\",\n  \"session\": \"{{sessionId}}\",\n  \"exam_type\": \"{{examTypeId}}\",\n  \"grading_scale\": \"{{gradingScaleId}}\",\n  \"start_date\": \"2026-11-10\",\n  \"end_date\": \"2026-11-20\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "GET school/exams/{{examId}}/",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/api/v1/school/exams/{{examId}}/",
+            "description": "Replace sample ID variables with IDs returned by the API."
+          }
+        },
+        {
+          "name": "PATCH school/exams/{{examId}}/",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "X-CSRF-Token",
+                "value": "{{csrfToken}}"
+              }
+            ],
+            "url": "{{baseUrl}}/api/v1/school/exams/{{examId}}/",
+            "description": "Replace sample ID variables with IDs returned by the API.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Mid Term 2026\",\n  \"session\": \"{{sessionId}}\",\n  \"exam_type\": \"{{examTypeId}}\",\n  \"grading_scale\": \"{{gradingScaleId}}\",\n  \"start_date\": \"2026-11-10\",\n  \"end_date\": \"2026-11-20\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "DELETE school/exams/{{examId}}/",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "X-CSRF-Token",
+                "value": "{{csrfToken}}"
+              }
+            ],
+            "url": "{{baseUrl}}/api/v1/school/exams/{{examId}}/",
+            "description": "Replace sample ID variables with IDs returned by the API."
+          }
+        },
+        {
+          "name": "POST school/exams/{{examId}}/archive/",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "X-CSRF-Token",
+                "value": "{{csrfToken}}"
+              }
+            ],
+            "url": "{{baseUrl}}/api/v1/school/exams/{{examId}}/archive/",
+            "description": "Replace sample ID variables with IDs returned by the API.",
+            "body": {
+              "mode": "raw",
+              "raw": "{}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "GET school/exams/{{examId}}/marks/",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/api/v1/school/exams/{{examId}}/marks/",
+            "description": "Replace sample ID variables with IDs returned by the API."
+          }
+        },
+        {
+          "name": "POST school/exams/{{examId}}/marks/",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "X-CSRF-Token",
+                "value": "{{csrfToken}}"
+              }
+            ],
+            "url": "{{baseUrl}}/api/v1/school/exams/{{examId}}/marks/",
+            "description": "Replace sample ID variables with IDs returned by the API.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"exam_subject\": \"{{examSubjectId}}\",\n  \"entries\": [\n    {\n      \"student\": \"{{studentId}}\",\n      \"obtained_marks\": \"85.00\",\n      \"is_absent\": false,\n      \"remarks\": \"\"\n    }\n  ]\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "POST school/exams/{{examId}}/open-marks/",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "X-CSRF-Token",
+                "value": "{{csrfToken}}"
+              }
+            ],
+            "url": "{{baseUrl}}/api/v1/school/exams/{{examId}}/open-marks/",
+            "description": "Replace sample ID variables with IDs returned by the API.",
+            "body": {
+              "mode": "raw",
+              "raw": "{}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "GET school/exams/{{examId}}/preview/",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/api/v1/school/exams/{{examId}}/preview/",
+            "description": "Replace sample ID variables with IDs returned by the API."
+          }
+        },
+        {
+          "name": "POST school/exams/{{examId}}/publish/",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "X-CSRF-Token",
+                "value": "{{csrfToken}}"
+              }
+            ],
+            "url": "{{baseUrl}}/api/v1/school/exams/{{examId}}/publish/",
+            "description": "Replace sample ID variables with IDs returned by the API.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"force\": false\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "POST school/exams/{{examId}}/schedule/",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "X-CSRF-Token",
+                "value": "{{csrfToken}}"
+              }
+            ],
+            "url": "{{baseUrl}}/api/v1/school/exams/{{examId}}/schedule/",
+            "description": "Replace sample ID variables with IDs returned by the API.",
+            "body": {
+              "mode": "raw",
+              "raw": "{}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "GET school/exams/{{examId}}/subjects/",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/api/v1/school/exams/{{examId}}/subjects/",
+            "description": "Replace sample ID variables with IDs returned by the API."
+          }
+        },
+        {
+          "name": "GET school/exam-subjects/",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/api/v1/school/exam-subjects/",
+            "description": "Requires authentication, and CSRF on unsafe requests."
+          }
+        },
+        {
+          "name": "POST school/exam-subjects/",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "X-CSRF-Token",
+                "value": "{{csrfToken}}"
+              }
+            ],
+            "url": "{{baseUrl}}/api/v1/school/exam-subjects/",
+            "description": "Requires authentication, and CSRF on unsafe requests.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"exam\": \"{{examId}}\",\n  \"school_class\": \"{{classId}}\",\n  \"subject\": \"{{subjectId}}\",\n  \"exam_date\": \"2026-11-12\",\n  \"start_time\": \"09:00:00\",\n  \"duration_minutes\": 60,\n  \"total_marks\": \"100.00\",\n  \"passing_marks\": \"40.00\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "GET school/exam-subjects/{{examSubjectId}}/",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/api/v1/school/exam-subjects/{{examSubjectId}}/",
+            "description": "Replace sample ID variables with IDs returned by the API."
+          }
+        },
+        {
+          "name": "PATCH school/exam-subjects/{{examSubjectId}}/",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "X-CSRF-Token",
+                "value": "{{csrfToken}}"
+              }
+            ],
+            "url": "{{baseUrl}}/api/v1/school/exam-subjects/{{examSubjectId}}/",
+            "description": "Replace sample ID variables with IDs returned by the API.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"exam\": \"{{examId}}\",\n  \"school_class\": \"{{classId}}\",\n  \"subject\": \"{{subjectId}}\",\n  \"exam_date\": \"2026-11-12\",\n  \"start_time\": \"09:00:00\",\n  \"duration_minutes\": 60,\n  \"total_marks\": \"100.00\",\n  \"passing_marks\": \"40.00\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "DELETE school/exam-subjects/{{examSubjectId}}/",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "X-CSRF-Token",
+                "value": "{{csrfToken}}"
+              }
+            ],
+            "url": "{{baseUrl}}/api/v1/school/exam-subjects/{{examSubjectId}}/",
+            "description": "Replace sample ID variables with IDs returned by the API."
+          }
+        },
+        {
+          "name": "GET school/results/",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/api/v1/school/results/",
+            "description": "Requires authentication, and CSRF on unsafe requests."
+          }
+        },
+        {
+          "name": "GET school/results/{{resultId}}/",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/api/v1/school/results/{{resultId}}/",
+            "description": "Replace sample ID variables with IDs returned by the API."
+          }
+        },
+        {
+          "name": "GET school/results/{{resultId}}/pdf/",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/api/v1/school/results/{{resultId}}/pdf/",
+            "description": "Replace sample ID variables with IDs returned by the API."
+          }
+        },
+        {
+          "name": "GET school/results/transcript/{{studentId}}/pdf/",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/api/v1/school/results/transcript/{{studentId}}/pdf/",
+            "description": "Replace sample ID variables with IDs returned by the API."
+          }
+        }
+      ]
+    },
+    {
+      "name": "School - Fees",
+      "item": [
+        {
+          "name": "GET school/fees/categories/",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/api/v1/school/fees/categories/",
+            "description": "Requires authentication, and CSRF on unsafe requests."
+          }
+        },
+        {
+          "name": "POST school/fees/categories/",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "X-CSRF-Token",
+                "value": "{{csrfToken}}"
+              }
+            ],
+            "url": "{{baseUrl}}/api/v1/school/fees/categories/",
+            "description": "Requires authentication, and CSRF on unsafe requests.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Tuition Fee\",\n  \"code\": \"TUITION\",\n  \"is_recurring\": true\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "GET school/fees/categories/{{feeCategoryId}}/",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/api/v1/school/fees/categories/{{feeCategoryId}}/",
+            "description": "Replace sample ID variables with IDs returned by the API."
+          }
+        },
+        {
+          "name": "PATCH school/fees/categories/{{feeCategoryId}}/",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "X-CSRF-Token",
+                "value": "{{csrfToken}}"
+              }
+            ],
+            "url": "{{baseUrl}}/api/v1/school/fees/categories/{{feeCategoryId}}/",
+            "description": "Replace sample ID variables with IDs returned by the API.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Tuition Fee\",\n  \"code\": \"TUITION\",\n  \"is_recurring\": true\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "DELETE school/fees/categories/{{feeCategoryId}}/",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "X-CSRF-Token",
+                "value": "{{csrfToken}}"
+              }
+            ],
+            "url": "{{baseUrl}}/api/v1/school/fees/categories/{{feeCategoryId}}/",
+            "description": "Replace sample ID variables with IDs returned by the API."
+          }
+        },
+        {
+          "name": "GET school/fees/structures/",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/api/v1/school/fees/structures/",
+            "description": "Requires authentication, and CSRF on unsafe requests."
+          }
+        },
+        {
+          "name": "POST school/fees/structures/",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "X-CSRF-Token",
+                "value": "{{csrfToken}}"
+              }
+            ],
+            "url": "{{baseUrl}}/api/v1/school/fees/structures/",
+            "description": "Requires authentication, and CSRF on unsafe requests.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Monthly tuition\",\n  \"session\": \"{{sessionId}}\",\n  \"school_class\": \"{{classId}}\",\n  \"frequency\": \"MONTHLY\",\n  \"items\": [\n    {\n      \"category\": \"{{feeCategoryId}}\",\n      \"amount\": \"1000.00\"\n    }\n  ]\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "GET school/fees/structures/{{feeStructureId}}/",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/api/v1/school/fees/structures/{{feeStructureId}}/",
+            "description": "Replace sample ID variables with IDs returned by the API."
+          }
+        },
+        {
+          "name": "PATCH school/fees/structures/{{feeStructureId}}/",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "X-CSRF-Token",
+                "value": "{{csrfToken}}"
+              }
+            ],
+            "url": "{{baseUrl}}/api/v1/school/fees/structures/{{feeStructureId}}/",
+            "description": "Replace sample ID variables with IDs returned by the API.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Monthly tuition\",\n  \"session\": \"{{sessionId}}\",\n  \"school_class\": \"{{classId}}\",\n  \"frequency\": \"MONTHLY\",\n  \"items\": [\n    {\n      \"category\": \"{{feeCategoryId}}\",\n      \"amount\": \"1000.00\"\n    }\n  ]\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "DELETE school/fees/structures/{{feeStructureId}}/",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "X-CSRF-Token",
+                "value": "{{csrfToken}}"
+              }
+            ],
+            "url": "{{baseUrl}}/api/v1/school/fees/structures/{{feeStructureId}}/",
+            "description": "Replace sample ID variables with IDs returned by the API."
+          }
+        },
+        {
+          "name": "GET school/fees/invoices/",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/api/v1/school/fees/invoices/",
+            "description": "Requires authentication, and CSRF on unsafe requests."
+          }
+        },
+        {
+          "name": "POST school/fees/invoices/generate/",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "X-CSRF-Token",
+                "value": "{{csrfToken}}"
+              }
+            ],
+            "url": "{{baseUrl}}/api/v1/school/fees/invoices/generate/",
+            "description": "Requires authentication, and CSRF on unsafe requests.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"structure\": \"{{feeStructureId}}\",\n  \"period_label\": \"2026-11\",\n  \"issue_date\": \"2026-11-01\",\n  \"due_date\": \"2026-11-10\",\n  \"section\": \"{{sectionId}}\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "GET school/fees/invoices/{{invoiceId}}/",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/api/v1/school/fees/invoices/{{invoiceId}}/",
+            "description": "Replace sample ID variables with IDs returned by the API."
+          }
+        },
+        {
+          "name": "POST school/fees/invoices/{{invoiceId}}/payments/",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "X-CSRF-Token",
+                "value": "{{csrfToken}}"
+              }
+            ],
+            "url": "{{baseUrl}}/api/v1/school/fees/invoices/{{invoiceId}}/payments/",
+            "description": "Replace sample ID variables with IDs returned by the API.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"amount\": \"1000.00\",\n  \"method\": \"CASH\",\n  \"reference\": \"test-collection\",\n  \"paid_on\": \"2026-11-04\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "POST school/fees/invoices/{{invoiceId}}/discounts/",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "X-CSRF-Token",
+                "value": "{{csrfToken}}"
+              }
+            ],
+            "url": "{{baseUrl}}/api/v1/school/fees/invoices/{{invoiceId}}/discounts/",
+            "description": "Replace sample ID variables with IDs returned by the API.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"kind\": \"FIXED\",\n  \"value\": \"100.00\",\n  \"reason\": \"Testing discount\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "POST school/fees/invoices/{{invoiceId}}/fines/",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "X-CSRF-Token",
+                "value": "{{csrfToken}}"
+              }
+            ],
+            "url": "{{baseUrl}}/api/v1/school/fees/invoices/{{invoiceId}}/fines/",
+            "description": "Replace sample ID variables with IDs returned by the API.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"amount\": \"50.00\",\n  \"reason\": \"Testing fine\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "POST school/fees/invoices/{{invoiceId}}/void/",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "X-CSRF-Token",
+                "value": "{{csrfToken}}"
+              }
+            ],
+            "url": "{{baseUrl}}/api/v1/school/fees/invoices/{{invoiceId}}/void/",
+            "description": "Replace sample ID variables with IDs returned by the API.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"reason\": \"Testing reversal\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "GET school/fees/payments/",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/api/v1/school/fees/payments/",
+            "description": "Requires authentication, and CSRF on unsafe requests."
+          }
+        },
+        {
+          "name": "GET school/fees/payments/{{platformPaymentId}}/",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/api/v1/school/fees/payments/{{feePaymentId}}/",
+            "description": "Replace sample ID variables with IDs returned by the API."
+          }
+        },
+        {
+          "name": "POST school/fees/payments/{{platformPaymentId}}/reverse/",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "X-CSRF-Token",
+                "value": "{{csrfToken}}"
+              }
+            ],
+            "url": "{{baseUrl}}/api/v1/school/fees/payments/{{feePaymentId}}/reverse/",
+            "description": "Replace sample ID variables with IDs returned by the API.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"reason\": \"Testing reversal\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "GET school/fees/payments/{{feePaymentId}}/receipt/pdf/",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/api/v1/school/fees/payments/{{feePaymentId}}/receipt/pdf/",
+            "description": "Replace sample ID variables with IDs returned by the API."
+          }
+        },
+        {
+          "name": "GET school/fees/invoices/{{invoiceId}}/pdf/",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/api/v1/school/fees/invoices/{{invoiceId}}/pdf/",
+            "description": "Replace sample ID variables with IDs returned by the API."
+          }
+        }
+      ]
+    },
+    {
+      "name": "School - Reports & Exports",
+      "item": [
+        {
+          "name": "GET school/exports/students/csv/",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/api/v1/school/exports/students/csv/",
+            "description": "Requires authentication, and CSRF on unsafe requests."
+          }
+        },
+        {
+          "name": "GET school/exports/teachers/csv/",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/api/v1/school/exports/teachers/csv/",
+            "description": "Requires authentication, and CSRF on unsafe requests."
+          }
+        },
+        {
+          "name": "GET school/exports/attendance/csv/",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/api/v1/school/exports/attendance/csv/",
+            "description": "Requires authentication, and CSRF on unsafe requests."
+          }
+        },
+        {
+          "name": "GET school/exports/fees/csv/",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/api/v1/school/exports/fees/csv/",
+            "description": "Requires authentication, and CSRF on unsafe requests."
+          }
+        },
+        {
+          "name": "GET school/exports/results/csv/",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/api/v1/school/exports/results/csv/",
+            "description": "Requires authentication, and CSRF on unsafe requests."
+          }
+        },
+        {
+          "name": "GET school/reports/attendance/pdf/",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/api/v1/school/reports/attendance/pdf/",
+            "description": "Requires authentication, and CSRF on unsafe requests."
+          }
+        },
+        {
+          "name": "GET school/reports/fees/outstanding/pdf/",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/api/v1/school/reports/fees/outstanding/pdf/",
+            "description": "Requires authentication, and CSRF on unsafe requests."
+          }
+        },
+        {
+          "name": "GET school/reports/students/pdf/",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/api/v1/school/reports/students/pdf/",
+            "description": "Requires authentication, and CSRF on unsafe requests."
+          }
+        },
+        {
+          "name": "GET school/reports/fees/outstanding/",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/api/v1/school/reports/fees/outstanding/",
+            "description": "Requires authentication, and CSRF on unsafe requests."
+          }
+        },
+        {
+          "name": "GET school/reports/students/summary/",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/api/v1/school/reports/students/summary/",
+            "description": "Requires authentication, and CSRF on unsafe requests."
+          }
+        },
+        {
+          "name": "GET school/reports/exams/{{examId}}/",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/api/v1/school/reports/exams/{{examId}}/",
+            "description": "Replace sample ID variables with IDs returned by the API."
+          }
+        }
+      ]
+    },
+    {
+      "name": "School - Announcements",
+      "item": [
+        {
+          "name": "GET school/announcements/",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/api/v1/school/announcements/",
+            "description": "Requires authentication, and CSRF on unsafe requests."
+          }
+        },
+        {
+          "name": "POST school/announcements/",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "X-CSRF-Token",
+                "value": "{{csrfToken}}"
+              }
+            ],
+            "url": "{{baseUrl}}/api/v1/school/announcements/",
+            "description": "Requires authentication, and CSRF on unsafe requests.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"School notice\",\n  \"body\": \"Sample announcement for API testing.\",\n  \"audience\": \"ALL\",\n  \"school_class\": null,\n  \"is_pinned\": false\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "GET school/announcements/unread-count/",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/api/v1/school/announcements/unread-count/",
+            "description": "Requires authentication, and CSRF on unsafe requests."
+          }
+        },
+        {
+          "name": "GET school/announcements/{{announcementId}}/",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/api/v1/school/announcements/{{announcementId}}/",
+            "description": "Replace sample ID variables with IDs returned by the API."
+          }
+        },
+        {
+          "name": "PATCH school/announcements/{{announcementId}}/",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "X-CSRF-Token",
+                "value": "{{csrfToken}}"
+              }
+            ],
+            "url": "{{baseUrl}}/api/v1/school/announcements/{{announcementId}}/",
+            "description": "Replace sample ID variables with IDs returned by the API.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"School notice\",\n  \"body\": \"Sample announcement for API testing.\",\n  \"audience\": \"ALL\",\n  \"school_class\": null,\n  \"is_pinned\": false\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "DELETE school/announcements/{{announcementId}}/",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "X-CSRF-Token",
+                "value": "{{csrfToken}}"
+              }
+            ],
+            "url": "{{baseUrl}}/api/v1/school/announcements/{{announcementId}}/",
+            "description": "Replace sample ID variables with IDs returned by the API."
+          }
+        },
+        {
+          "name": "POST school/announcements/{{announcementId}}/read/",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "X-CSRF-Token",
+                "value": "{{csrfToken}}"
+              }
+            ],
+            "url": "{{baseUrl}}/api/v1/school/announcements/{{announcementId}}/read/",
+            "description": "Replace sample ID variables with IDs returned by the API.",
+            "body": {
+              "mode": "raw",
+              "raw": "{}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Notifications",
+      "item": [
+        {
+          "name": "GET notifications/",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/api/v1/notifications/",
+            "description": "Requires authentication, and CSRF on unsafe requests."
+          }
+        },
+        {
+          "name": "POST notifications/mark-all-read/",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "X-CSRF-Token",
+                "value": "{{csrfToken}}"
+              }
+            ],
+            "url": "{{baseUrl}}/api/v1/notifications/mark-all-read/",
+            "description": "Requires authentication, and CSRF on unsafe requests.",
+            "body": {
+              "mode": "raw",
+              "raw": "{}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "GET notifications/unread-count/",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/api/v1/notifications/unread-count/",
+            "description": "Requires authentication, and CSRF on unsafe requests."
+          }
+        },
+        {
+          "name": "POST notifications/{{notificationId}}/read/",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "X-CSRF-Token",
+                "value": "{{csrfToken}}"
+              }
+            ],
+            "url": "{{baseUrl}}/api/v1/notifications/{{notificationId}}/read/",
+            "description": "Replace sample ID variables with IDs returned by the API.",
+            "body": {
+              "mode": "raw",
+              "raw": "{}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Platform Admin",
+      "item": [
+        {
+          "name": "GET platform/dashboard/",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/api/v1/platform/dashboard/",
+            "description": "Super Admin only; replace sample IDs and request data."
+          }
+        },
+        {
+          "name": "GET platform/settings/",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/api/v1/platform/settings/",
+            "description": "Super Admin only; replace sample IDs and request data."
+          }
+        },
+        {
+          "name": "PATCH platform/settings/",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "X-CSRF-Token",
+                "value": "{{csrfToken}}"
+              }
+            ],
+            "url": "{{baseUrl}}/api/v1/platform/settings/",
+            "description": "Super Admin only; replace sample IDs and request data.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"trial_duration_days\": 7,\n  \"trial_expiring_notice_days\": 2,\n  \"expiring_notice_days\": 7,\n  \"past_due_grace_days\": 5,\n  \"expired_access_mode\": \"READ_ONLY\",\n  \"school_image_quota_mb\": 50,\n  \"trial_plan_slug\": \"\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "GET platform/schools/",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/api/v1/platform/schools/",
+            "description": "Super Admin only; replace sample IDs and request data."
+          }
+        },
+        {
+          "name": "GET platform/schools/{{schoolId}}/",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/api/v1/platform/schools/{{schoolId}}/",
+            "description": "Super Admin only; replace sample IDs and request data."
+          }
+        },
+        {
+          "name": "GET platform/schools/{{schoolId}}/activity/",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/api/v1/platform/schools/{{schoolId}}/activity/",
+            "description": "Super Admin only; replace sample IDs and request data."
+          }
+        },
+        {
+          "name": "POST platform/schools/{{schoolId}}/deactivate/",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "X-CSRF-Token",
+                "value": "{{csrfToken}}"
+              }
+            ],
+            "url": "{{baseUrl}}/api/v1/platform/schools/{{schoolId}}/deactivate/",
+            "description": "Super Admin only; replace sample IDs and request data.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"reason\": \"Testing lifecycle API\",\n  \"confirm\": true\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "POST platform/schools/{{schoolId}}/notify/",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "X-CSRF-Token",
+                "value": "{{csrfToken}}"
+              }
+            ],
+            "url": "{{baseUrl}}/api/v1/platform/schools/{{schoolId}}/notify/",
+            "description": "Super Admin only; replace sample IDs and request data.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"API test notice\",\n  \"body\": \"Test message\",\n  \"severity\": \"INFO\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "POST platform/schools/{{schoolId}}/reactivate/",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "X-CSRF-Token",
+                "value": "{{csrfToken}}"
+              }
+            ],
+            "url": "{{baseUrl}}/api/v1/platform/schools/{{schoolId}}/reactivate/",
+            "description": "Super Admin only; replace sample IDs and request data.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"reason\": \"Testing lifecycle API\",\n  \"confirm\": true\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "POST platform/schools/{{schoolId}}/suspend/",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "X-CSRF-Token",
+                "value": "{{csrfToken}}"
+              }
+            ],
+            "url": "{{baseUrl}}/api/v1/platform/schools/{{schoolId}}/suspend/",
+            "description": "Super Admin only; replace sample IDs and request data.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"reason\": \"Testing lifecycle API\",\n  \"confirm\": true\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "GET platform/schools/{{schoolId}}/users/",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/api/v1/platform/schools/{{schoolId}}/users/",
+            "description": "Super Admin only; replace sample IDs and request data."
+          }
+        },
+        {
+          "name": "GET platform/plans/",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/api/v1/platform/plans/",
+            "description": "Super Admin only; replace sample IDs and request data."
+          }
+        },
+        {
+          "name": "POST platform/plans/",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "X-CSRF-Token",
+                "value": "{{csrfToken}}"
+              }
+            ],
+            "url": "{{baseUrl}}/api/v1/platform/plans/",
+            "description": "Super Admin only; replace sample IDs and request data.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Example Plan\",\n  \"slug\": \"example-plan\",\n  \"description\": \"Development test plan\",\n  \"monthly_price\": \"10.00\",\n  \"currency\": \"PKR\",\n  \"max_students\": 100,\n  \"max_teachers\": 20,\n  \"max_classes\": 10,\n  \"features\": [\n    \"Attendance\"\n  ],\n  \"is_active\": true,\n  \"is_public\": true,\n  \"sort_order\": 1\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "GET platform/plans/{{planId}}/",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/api/v1/platform/plans/{{planId}}/",
+            "description": "Super Admin only; replace sample IDs and request data."
+          }
+        },
+        {
+          "name": "PATCH platform/plans/{{planId}}/",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "X-CSRF-Token",
+                "value": "{{csrfToken}}"
+              }
+            ],
+            "url": "{{baseUrl}}/api/v1/platform/plans/{{planId}}/",
+            "description": "Super Admin only; replace sample IDs and request data.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Example Plan\",\n  \"description\": \"Development test plan\",\n  \"monthly_price\": \"10.00\",\n  \"currency\": \"PKR\",\n  \"max_students\": 100,\n  \"max_teachers\": 20,\n  \"max_classes\": 10,\n  \"features\": [\n    \"Attendance\"\n  ],\n  \"is_active\": true,\n  \"is_public\": true,\n  \"sort_order\": 1\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "GET platform/subscriptions/",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/api/v1/platform/subscriptions/",
+            "description": "Super Admin only; replace sample IDs and request data."
+          }
+        },
+        {
+          "name": "GET platform/subscriptions/{{subscriptionId}}/",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/api/v1/platform/subscriptions/{{subscriptionId}}/",
+            "description": "Super Admin only; replace sample IDs and request data."
+          }
+        },
+        {
+          "name": "POST platform/subscriptions/{{subscriptionId}}/cancel/",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "X-CSRF-Token",
+                "value": "{{csrfToken}}"
+              }
+            ],
+            "url": "{{baseUrl}}/api/v1/platform/subscriptions/{{subscriptionId}}/cancel/",
+            "description": "Super Admin only; replace sample IDs and request data.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"reason\": \"API test cancellation\",\n  \"confirm\": true\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "POST platform/subscriptions/{{subscriptionId}}/change-plan/",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "X-CSRF-Token",
+                "value": "{{csrfToken}}"
+              }
+            ],
+            "url": "{{baseUrl}}/api/v1/platform/subscriptions/{{subscriptionId}}/change-plan/",
+            "description": "Super Admin only; replace sample IDs and request data.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"plan\": \"{{planId}}\",\n  \"reason\": \"API test plan change\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "GET platform/subscriptions/{{subscriptionId}}/events/",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/api/v1/platform/subscriptions/{{subscriptionId}}/events/",
+            "description": "Super Admin only; replace sample IDs and request data."
+          }
+        },
+        {
+          "name": "POST platform/subscriptions/{{subscriptionId}}/extend/",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "X-CSRF-Token",
+                "value": "{{csrfToken}}"
+              }
+            ],
+            "url": "{{baseUrl}}/api/v1/platform/subscriptions/{{subscriptionId}}/extend/",
+            "description": "Super Admin only; replace sample IDs and request data.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"days\": 30,\n  \"reason\": \"API test extension\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "POST platform/subscriptions/{{subscriptionId}}/extend-trial/",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "X-CSRF-Token",
+                "value": "{{csrfToken}}"
+              }
+            ],
+            "url": "{{baseUrl}}/api/v1/platform/subscriptions/{{subscriptionId}}/extend-trial/",
+            "description": "Super Admin only; replace sample IDs and request data.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"days\": 7,\n  \"reason\": \"API test extension\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "POST platform/subscriptions/{{subscriptionId}}/resume/",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "X-CSRF-Token",
+                "value": "{{csrfToken}}"
+              }
+            ],
+            "url": "{{baseUrl}}/api/v1/platform/subscriptions/{{subscriptionId}}/resume/",
+            "description": "Super Admin only; replace sample IDs and request data.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"reason\": \"API test resume\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "POST platform/subscriptions/{{subscriptionId}}/suspend/",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "X-CSRF-Token",
+                "value": "{{csrfToken}}"
+              }
+            ],
+            "url": "{{baseUrl}}/api/v1/platform/subscriptions/{{subscriptionId}}/suspend/",
+            "description": "Super Admin only; replace sample IDs and request data.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"reason\": \"API test suspension\",\n  \"confirm\": true\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "GET platform/payments/",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/api/v1/platform/payments/",
+            "description": "Super Admin only; replace sample IDs and request data."
+          }
+        },
+        {
+          "name": "POST platform/payments/",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "X-CSRF-Token",
+                "value": "{{csrfToken}}"
+              }
+            ],
+            "url": "{{baseUrl}}/api/v1/platform/payments/",
+            "description": "Super Admin only; replace sample IDs and request data.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"school\": \"{{schoolId}}\",\n  \"amount\": \"100.00\",\n  \"currency\": \"PKR\",\n  \"payment_method\": \"BANK_TRANSFER\",\n  \"transaction_reference\": \"hoppscotch-test\",\n  \"payment_date\": \"2026-11-04\",\n  \"months\": 1,\n  \"notes\": \"Local API test\",\n  \"plan\": \"{{planId}}\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "GET platform/payments/{{platformPaymentId}}/",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/api/v1/platform/payments/{{platformPaymentId}}/",
+            "description": "Super Admin only; replace sample IDs and request data."
+          }
+        },
+        {
+          "name": "GET platform/audit-logs/",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/api/v1/platform/audit-logs/",
+            "description": "Super Admin only; replace sample IDs and request data."
+          }
+        },
+        {
+          "name": "GET platform/audit-logs/actions/",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/api/v1/platform/audit-logs/actions/",
+            "description": "Super Admin only; replace sample IDs and request data."
+          }
+        }
+      ]
+    }
+  ],
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:8000",
+      "type": "string"
+    },
+    {
+      "key": "csrfToken",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "email",
+      "value": "replace-with-account-email@example.com",
+      "type": "string"
+    },
+    {
+      "key": "password",
+      "value": "replace-with-account-password",
+      "type": "string"
+    },
+    {
+      "key": "studentId",
+      "value": "00000000-0000-4000-8000-000000000001",
+      "type": "string"
+    },
+    {
+      "key": "guardianId",
+      "value": "00000000-0000-4000-8000-000000000001",
+      "type": "string"
+    },
+    {
+      "key": "documentId",
+      "value": "00000000-0000-4000-8000-000000000001",
+      "type": "string"
+    },
+    {
+      "key": "teacherId",
+      "value": "00000000-0000-4000-8000-000000000001",
+      "type": "string"
+    },
+    {
+      "key": "sessionId",
+      "value": "00000000-0000-4000-8000-000000000001",
+      "type": "string"
+    },
+    {
+      "key": "classId",
+      "value": "00000000-0000-4000-8000-000000000001",
+      "type": "string"
+    },
+    {
+      "key": "sectionId",
+      "value": "00000000-0000-4000-8000-000000000001",
+      "type": "string"
+    },
+    {
+      "key": "subjectId",
+      "value": "00000000-0000-4000-8000-000000000001",
+      "type": "string"
+    },
+    {
+      "key": "classSubjectId",
+      "value": "00000000-0000-4000-8000-000000000001",
+      "type": "string"
+    },
+    {
+      "key": "teacherAssignmentId",
+      "value": "00000000-0000-4000-8000-000000000001",
+      "type": "string"
+    },
+    {
+      "key": "enrollmentId",
+      "value": "00000000-0000-4000-8000-000000000001",
+      "type": "string"
+    },
+    {
+      "key": "timetableId",
+      "value": "00000000-0000-4000-8000-000000000001",
+      "type": "string"
+    },
+    {
+      "key": "examTypeId",
+      "value": "00000000-0000-4000-8000-000000000001",
+      "type": "string"
+    },
+    {
+      "key": "gradingScaleId",
+      "value": "00000000-0000-4000-8000-000000000001",
+      "type": "string"
+    },
+    {
+      "key": "examId",
+      "value": "00000000-0000-4000-8000-000000000001",
+      "type": "string"
+    },
+    {
+      "key": "examSubjectId",
+      "value": "00000000-0000-4000-8000-000000000001",
+      "type": "string"
+    },
+    {
+      "key": "resultId",
+      "value": "00000000-0000-4000-8000-000000000001",
+      "type": "string"
+    },
+    {
+      "key": "feeCategoryId",
+      "value": "00000000-0000-4000-8000-000000000001",
+      "type": "string"
+    },
+    {
+      "key": "feeStructureId",
+      "value": "00000000-0000-4000-8000-000000000001",
+      "type": "string"
+    },
+    {
+      "key": "invoiceId",
+      "value": "00000000-0000-4000-8000-000000000001",
+      "type": "string"
+    },
+    {
+      "key": "announcementId",
+      "value": "00000000-0000-4000-8000-000000000001",
+      "type": "string"
+    },
+    {
+      "key": "userId",
+      "value": "00000000-0000-4000-8000-000000000001",
+      "type": "string"
+    },
+    {
+      "key": "schoolId",
+      "value": "00000000-0000-4000-8000-000000000001",
+      "type": "string"
+    },
+    {
+      "key": "planId",
+      "value": "00000000-0000-4000-8000-000000000001",
+      "type": "string"
+    },
+    {
+      "key": "subscriptionId",
+      "value": "00000000-0000-4000-8000-000000000001",
+      "type": "string"
+    },
+    {
+      "key": "platformPaymentId",
+      "value": "00000000-0000-4000-8000-000000000001",
+      "type": "string"
+    },
+    {
+      "key": "auditLogId",
+      "value": "00000000-0000-4000-8000-000000000001",
+      "type": "string"
+    },
+    {
+      "key": "studentLinkId",
+      "value": "00000000-0000-4000-8000-000000000001",
+      "type": "string"
+    },
+    {
+      "key": "schoolImageId",
+      "value": "00000000-0000-4000-8000-000000000001",
+      "type": "string"
+    },
+    {
+      "key": "feePaymentId",
+      "value": "00000000-0000-4000-8000-000000000001",
+      "type": "string"
+    },
+    {
+      "key": "notificationId",
+      "value": "00000000-0000-4000-8000-000000000001",
+      "type": "string"
+    },
+    {
+      "key": "targetSessionId",
+      "value": "00000000-0000-4000-8000-000000000001",
+      "type": "string"
+    }
+  ]
+}
