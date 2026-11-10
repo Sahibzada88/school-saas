@@ -104,7 +104,8 @@ def _database_config() -> dict:
     url = os.environ.get(var, "").strip()
     if not url:
         raise ImproperlyConfigured(
-            f"{var} is not set. Copy backend/.env.example to backend/.env and fill it in."
+            f"{var} is not set. Locally: copy backend/.env.example to backend/.env and fill it in. "
+            "On Vercel: add it under Project Settings -> Environment Variables BEFORE deploying (the build imports the settings)."
         )
     config = dj_database_url.parse(url, conn_max_age=0, conn_health_checks=False)
     config["ATOMIC_REQUESTS"] = False  # services open transactions explicitly

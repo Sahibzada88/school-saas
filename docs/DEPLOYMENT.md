@@ -1,109 +1,178 @@
-# Deployment runbook (Vercel + Supabase)
+# Deployment: frontend and backend on Vercel (+ Supabase database)
 
-Architecture: **two Vercel projects** (Next.js frontend, Django backend) and **one Supabase PostgreSQL** database.
-The browser only talks to the frontend; `proxy.ts` forwards `/api/v1/*` to the backend, so cookies are first-party.
+Architecture: **two Vercel projects** from one GitHub repo and **one Supabase PostgreSQL** database.
 
-> Hobby plans are for non-commercial use. Before charging real schools, upgrade the Vercel plan (or move only the Django project to another host: it is a plain WSGI app).
-
-## 0. Before you start
-
-- Code is in a GitHub repository (monorepo: `backend/`, `frontend/`).
-- Locally verified: `python manage.py test` passes and `npm run lint && npx tsc --noEmit` pass.
-- Migrations are committed (`python manage.py makemigrations --check --dry-run` reports nothing).
-
-## 1. Supabase
-
-1. Create a project; choose the region nearest your users and note it (the Vercel function region must match).
-2. **Project Settings → Database → Connection string**: copy
-   - **Transaction pooler** (port 6543) → this is the runtime `DATABASE_URL`;
-   - **Session pooler** (port 5432) → `DIRECT_URL`, for migrations and backups.
-3. URL-encode special characters of the password.
-4. From your machine (PowerShell, in `backend` with the venv active), with `DIRECT_URL` in `.env`:
-
-```powershell
-$env:DJANGO_USE_DIRECT_URL = "1"
-python manage.py migrate
-python manage.py bootstrap_school_defaults      # no-op on an empty database
-python manage.py check_rls                       # must print: All public tables have RLS enabled.
-python manage.py createsuperuser                 # the platform owner account
-Remove-Item Env:DJANGO_USE_DIRECT_URL
+```
+Browser --> Vercel project "web" (Next.js, frontend/)  --proxy.ts rewrites /api/v1/*-->  Vercel project "api" (Django, backend/)  --> Supabase
 ```
 
-5. Optionally create your first plans in the app (Platform → Plans). `seed_plans` is development data only.
+The browser only ever talks to the **web** project, so cookies are first-party. `proxy.ts` forwards the real client IP together with `PROXY_SHARED_SECRET`, so the backend can trust it.
 
-## 2. Backend project (Vercel)
+> Hobby plans are for non-commercial use. Before charging real schools, move both projects to a Vercel Pro plan.
 
-1. **Add New → Project**, import the repo, **Root Directory = `backend`**, Framework preset **Other**.
-2. Environment variables (Production):
+How the backend is deployed (current Vercel behaviour, checked against the Vercel Django docs): Vercel detects `backend/manage.py`, reads `WSGI_APPLICATION` (`config.wsgi.application`) and turns the whole Django app into one Vercel Function. There is **no `api/` folder and no `vercel.json` rewrite** any more. `config/wsgi.py` forces `config.settings.production` whenever Vercel runs it. Fallback if detection ever fails: `docs/vercel-legacy-backend/README.md`.
 
-| Variable | Value |
+---
+
+## Step 1: Put the code on GitHub
+
+```powershell
+cd "D:\My personal projects\school-saas"
+git init
+git add .
+git status          # check: no .env, no node_modules, no .venv in the list
+git commit -m "School SaaS"
+git branch -M main
+git remote add origin https://github.com/<your-user>/school-saas.git
+git push -u origin main
+```
+
+Before pushing, commit the generated migrations too (`git add backend/apps/*/migrations`). `git status` must not show any `.env*` files except `.env.example` files.
+
+## Step 2: Supabase (database)
+
+1. Create a project at supabase.com. Pick the region nearest your users (for Pakistan: Mumbai `ap-south-1`) and remember it.
+2. Open **Connect** (or Project Settings -> Database) and copy two connection strings:
+   - **Transaction pooler**, port **6543**: this is `DATABASE_URL` (used by the running app).
+   - **Session pooler**, port **5432**: this is `DIRECT_URL` (used by migrations and backups).
+3. Replace `[YOUR-PASSWORD]` in both strings with your database password. URL-encode special characters (`@` -> `%40`, `#` -> `%23`, `/` -> `%2F`). Keep `?sslmode=require` at the end.
+
+## Step 3: Decide names and generate secrets
+
+Choose the two Vercel project names now, so the URLs are known in advance:
+
+| Project | Name (example) | Production URL |
+|---|---|---|
+| Backend | `school-saas-api` | `https://school-saas-api.vercel.app` |
+| Frontend | `school-saas-web` | `https://school-saas-web.vercel.app` |
+
+If a name is already taken, Vercel adds a suffix. After creating each project, check **Settings -> Domains** for the real production URL and use that everywhere below.
+
+Generate three secrets (PowerShell, any Python 3 on your PC):
+
+```powershell
+python -c "import secrets; print(secrets.token_urlsafe(64))"   # SECRET_KEY
+python -c "import secrets; print(secrets.token_urlsafe(64))"   # JWT_SIGNING_KEY
+python -c "import secrets; print(secrets.token_urlsafe(48))"   # PROXY_SHARED_SECRET (32+ chars, same value on BOTH projects)
+```
+
+## Step 4: Create the backend project (Django)
+
+1. Vercel dashboard -> **Add New -> Project** -> import your GitHub repo.
+2. **Project Name**: `school-saas-api`. **Root Directory**: click *Edit* and choose `backend`.
+3. **Framework Preset** should show **Django**. If it shows *Other*, change it to Django. Leave Build/Install/Output commands at their defaults (do **not** add `collectstatic` or `migrate`).
+4. Open **Environment Variables** (on this same screen, before deploying) and add, for *Production* (and *Preview* if you will use previews):
+
+| Name | Value |
 |---|---|
-| `DJANGO_SETTINGS_MODULE` | `config.settings.production` |
+| `SECRET_KEY` | the first secret |
+| `JWT_SIGNING_KEY` | the second secret |
+| `DATABASE_URL` | transaction pooler string (port **6543**) |
+| `FRONTEND_ORIGIN` | `https://school-saas-web.vercel.app` (no trailing slash) |
+| `PROXY_SHARED_SECRET` | the third secret |
 | `ENVIRONMENT` | `production` |
-| `SECRET_KEY` | 50+ random characters |
-| `JWT_SIGNING_KEY` | another random value (recommended) |
-| `DATABASE_URL` | transaction pooler string (6543) |
-| `ALLOWED_HOSTS` | the backend hostname, e.g. `school-saas-api.vercel.app` |
-| `FRONTEND_ORIGIN` | `https://<your-frontend-domain>` |
-| `CSRF_TRUSTED_ORIGINS` | same as `FRONTEND_ORIGIN` |
-| `CORS_ALLOWED_ORIGINS` | same as `FRONTEND_ORIGIN` |
-| `PROXY_SHARED_SECRET` | 32+ random characters, **identical on the frontend project** |
-| `EMAIL_BACKEND` | `smtp` (plus `EMAIL_HOST`, `EMAIL_PORT`, `EMAIL_HOST_USER`, `EMAIL_HOST_PASSWORD`, `EMAIL_FROM`) or leave unset: email is then skipped and logged |
+| `DEBUG` | `False` |
+| `DJANGO_SETTINGS_MODULE` | `config.settings.production` |
+| `EMAIL_BACKEND` | `smtp` plus `EMAIL_HOST`, `EMAIL_PORT`, `EMAIL_HOST_USER`, `EMAIL_HOST_PASSWORD`, `EMAIL_FROM` (optional; without it emails are skipped and logged) |
+| `ALLOWED_HOSTS` | only needed for a **custom** domain, e.g. `api.yourschool.com` (the `*.vercel.app` hostnames are added automatically) |
 
-Generate secrets: `python -c "import secrets; print(secrets.token_urlsafe(64))"`.
+   Do **not** set `DJANGO_USE_DIRECT_URL` on Vercel (it would make the running app use the 5432 string).
+   The variables must exist **before the first deploy**: the build runs `manage.py`, which imports the settings and needs `DATABASE_URL`.
+5. Click **Deploy**.
+6. After it finishes: **Settings -> Functions -> Function Region**: choose the region closest to Supabase (Mumbai `bom1` for `ap-south-1`) and redeploy once. Keeping the function and the database in the same region makes every request noticeably faster.
+7. Test: open `https://school-saas-api.vercel.app/api/v1/health/?db=1`. Expected: `{"success": true, ...}` with `"database": "ok"`. (The root URL `/` returns 404 on purpose: this is an API.)
 
-3. Project Settings → Functions → set the **region** to the Supabase region.
-4. Deploy, then check `https://<backend>/api/v1/health/?db=1` returns `{"success": true, ...}` with `"database": "ok"`.
+   If you see a **Vercel login page** or `401` instead: Settings -> Deployment Protection. Use the production domain, not a per-deployment hash URL, and make sure the production domain is not protected.
 
-## 3. Frontend project (Vercel)
+## Step 5: Create the tables in the production database (once, from your PC)
 
-1. **Add New → Project**, same repo, **Root Directory = `frontend`**, framework Next.js.
-2. Environment variables:
+Migrations never run on Vercel. Run them from your PC against the Supabase **session pooler**:
 
-| Variable | Value |
+```powershell
+cd "D:\My personal projects\school-saas"
+Copy-Item backend\.env.production.example backend\.env.production
+notepad backend\.env.production          # fill DIRECT_URL, DATABASE_URL, SECRET_KEY, FRONTEND_ORIGIN, PROXY_SHARED_SECRET, ALLOWED_HOSTS
+cd backend; .venv\Scripts\Activate.ps1; cd ..
+
+.\scripts\prod-manage.ps1 migrate                      # asks you to type YES, then creates all tables
+.\scripts\prod-manage.ps1 bootstrap_school_defaults    # harmless on an empty database
+.\scripts\prod-manage.ps1 check_rls                    # must print: All public tables have RLS enabled.
+.\scripts\prod-manage.ps1 createsuperuser              # the platform owner account (Argon2 password hash)
+```
+
+`backend/.env.production` is git-ignored: never commit it. If `migrate` says there are model changes without migrations, run `python manage.py makemigrations` locally, commit the new files, push, then migrate again.
+
+## Step 6: Create the frontend project (Next.js)
+
+1. **Add New -> Project** -> the same repo.
+2. **Project Name**: `school-saas-web`. **Root Directory**: `frontend`. **Framework Preset**: Next.js (automatic).
+3. **Environment Variables**:
+
+| Name | Value |
 |---|---|
-| `BACKEND_ORIGIN` | `https://<backend>.vercel.app` (no trailing slash) |
+| `BACKEND_ORIGIN` | `https://school-saas-api.vercel.app` (the backend production URL, no trailing slash) |
+| `PROXY_SHARED_SECRET` | the **same** third secret |
 | `NEXT_PUBLIC_API_URL` | `/api/v1` |
-| `PROXY_SHARED_SECRET` | the same value as the backend |
 
-3. Deploy. `frontend/vercel.json` adds a daily cron that calls the health endpoint (with a database query), which also stops the free Supabase project from pausing after a week of inactivity. Nothing depends on it.
-4. Custom domain (optional): attach it to the frontend project; update `FRONTEND_ORIGIN`, `CSRF_TRUSTED_ORIGINS` and `CORS_ALLOWED_ORIGINS` on the backend and redeploy it.
+4. **Deploy**. Then **Settings -> Functions -> Function Region** = the same region as the backend, and redeploy.
+5. Make sure the frontend's real production URL equals the `FRONTEND_ORIGIN` you gave the backend. If it differs, fix `FRONTEND_ORIGIN` on the backend project and redeploy the backend.
+6. `frontend/vercel.json` adds a daily cron that calls the health endpoint with a database query. It also keeps the free Supabase project from pausing after a week of inactivity.
 
-## 4. Smoke test (production)
+## Step 7: Check everything works
 
-1. Open the frontend URL: it must redirect to `/login`.
-2. Register a school: you land on the dashboard; the welcome email arrives (if SMTP is configured).
-3. In the browser dev tools (Application → Cookies) `access_token` and `refresh_token` must be **HttpOnly** and **Secure**.
-4. Sign in as the Super Admin; open Platform → Schools; the new school is listed with a trial.
-5. Add a class, a section, a student; enrol the student; mark attendance; download the student list PDF.
-6. Platform → school → Subscription → Record payment; the school admin sees the notification.
-7. Platform → Audit logs shows the registration, payment and export events.
-8. Check client IPs in the audit log are real addresses (not Vercel internals). If they are not, the two `PROXY_SHARED_SECRET` values differ.
+1. `https://school-saas-web.vercel.app/api/v1/health/?db=1`: same JSON as in Step 4, but through the frontend proxy. If this works, the two projects are connected correctly.
+2. `https://school-saas-web.vercel.app`: redirects to `/login`, page is styled.
+3. Log in with the superuser from Step 5: you land on `/platform/dashboard`.
+4. In a private window: **Register** a school. You land on its dashboard.
+5. DevTools -> Application -> Cookies: `access_token` and `refresh_token` are **HttpOnly** and **Secure**.
+6. Platform -> Audit logs: the registration event shows a **real IP address**. If it shows a Vercel-internal address, the two `PROXY_SHARED_SECRET` values differ.
+7. Run the rest of the manual script in `README.md` (sections 1 to 13) against the production URL.
 
-## 5. Operations
+## Step 8: Custom domain (optional)
 
-- **Backups:** the free tier has none. Run `.\scripts\backup.ps1 -Url "<DIRECT_URL>"` regularly (needs `pg_dump`) and keep the files somewhere safe. Restore command is in the script header.
-- **Database size:** free tier = 500 MB. Student/teacher photos and logos live in the database (limits: photos 150 KB, logos 300 KB, 50 MB per school, configurable under Platform → Settings). Watch the Supabase dashboard.
-- **Migrations:** run them from your machine with `DJANGO_USE_DIRECT_URL=1`, *before* deploying code that needs them. Never run migrations during a Vercel build.
-- **Rollback:** Vercel → Deployments → promote the previous deployment. Database changes are forward-only: take a backup before destructive migrations.
-- **Secrets rotation:** changing `SECRET_KEY`/`JWT_SIGNING_KEY` signs every user out (acceptable). Changing `PROXY_SHARED_SECRET` requires redeploying both projects together.
+1. Frontend project -> Settings -> Domains -> add `app.yourschool.com`, follow the DNS instructions.
+2. Update `FRONTEND_ORIGIN` on the **backend** project to `https://app.yourschool.com`, redeploy the backend.
+3. Backend: keep `BACKEND_ORIGIN` pointing at its `*.vercel.app` URL (no custom domain needed for the API). If you do give the API its own domain, add that host to `ALLOWED_HOSTS` on the backend.
 
-## 6. Serverless limits to keep in mind
+## Updating later
 
-- Function time and memory limits depend on your Vercel plan: check the current limits for your plan.
-- CSV exports are capped at 20,000 rows and PDFs at 500 rows per request (HTTP 413 with a hint to narrow filters). Invoice generation is capped at 1,000 students per run (generate per section).
-- No background workers exist: trial/subscription expiry, notifications and emails are derived or created lazily on requests.
-- For much larger exports later: generate in a scheduled job or worker and store the file in object storage (not built, by design).
+- `git push` to `main` redeploys both projects automatically (only the one whose folder changed).
+- Changing models: `makemigrations` locally -> commit -> **run `.\scripts\prod-manage.ps1 migrate` first** -> then push. Take a backup before destructive migrations.
+- Changing an env var: edit it in Vercel, then **Redeploy** (env changes apply to new deployments only).
+- Rollback: Vercel -> Deployments -> pick an older deployment -> *Promote to Production*. Database changes are forward-only.
 
-## 7. Production security checklist
+## Troubleshooting
 
-- [ ] `DEBUG` is off; `SECRET_KEY`, `JWT_SIGNING_KEY`, `PROXY_SHARED_SECRET` are random and private.
-- [ ] `check_rls` passes (no table is reachable through Supabase's public API).
+| Symptom | Cause / fix |
+|---|---|
+| Backend build fails: `DATABASE_URL is not set` | Add the env vars (Step 4) and redeploy. The build imports the settings. |
+| Backend build fails: `ImproperlyConfigured ... SECRET_KEY / FRONTEND_ORIGIN / PROXY_SHARED_SECRET` | Fix that variable: SECRET_KEY >= 50 chars, FRONTEND_ORIGIN starts with `https://`, PROXY_SHARED_SECRET >= 32 chars. |
+| Every backend URL gives `404: NOT_FOUND` (Vercel page) | Django was not detected. Check Root Directory = `backend`, Framework Preset = Django; else use Plan B (`docs/vercel-legacy-backend/README.md`). |
+| `DisallowedHost` in function logs | Custom domain missing: add it to `ALLOWED_HOSTS`. |
+| `/api/v1/health/` is OK on the backend but 500/502 on the frontend | `BACKEND_ORIGIN` wrong (use the production URL, `https://`, no trailing slash) or Deployment Protection is on for the backend. |
+| `403` on every POST/PATCH/DELETE | `FRONTEND_ORIGIN` on the backend must equal the frontend's real URL exactly. Also call the API only through the frontend URL. |
+| Login works, then you are logged out on the next page | Cookies blocked: you are using the backend URL directly, or `PROXY_SHARED_SECRET` differs. Use the frontend URL only. |
+| `database: "error"` in health | Wrong `DATABASE_URL` (password encoding, port 6543, `?sslmode=require`) or Supabase project paused: open the Supabase dashboard and restore it. |
+| `prepared statement ... does not exist` | `DATABASE_URL` must be the **6543 transaction pooler** string; the app already disables prepared statements for it. |
+| Very slow first request after idle | Cold start (Django imports). Normal on the free plan; same-region function + database keeps it to a couple of seconds. |
+| Upload or download fails with 413 | Vercel limits request/response bodies to about 4.5 MB. CSV imports are capped at 1 MB, images at 150-300 KB; narrow big exports (the app already caps rows). |
+
+## Operations
+
+- **Backups:** free Supabase has none. Run `.\scripts\backup.ps1 -Url "<DIRECT_URL>"` regularly (needs `pg_dump`) and keep the files safe. Restore command is in the script header.
+- **Database size:** free tier = 500 MB. Photos and logos live in the database (photos 150 KB, logos 300 KB, 50 MB per school, configurable under Platform -> Settings).
+- **Secrets rotation:** changing `SECRET_KEY` / `JWT_SIGNING_KEY` signs everyone out. Changing `PROXY_SHARED_SECRET` means updating **both** projects and redeploying both.
+- **No background workers:** trial/subscription expiry, notices and emails are derived or created lazily during requests.
+
+## Production security checklist
+
+- [ ] `DEBUG=False`; SECRET_KEY, JWT_SIGNING_KEY, PROXY_SHARED_SECRET are random and private.
+- [ ] `check_rls` passed against the production database.
 - [ ] No Supabase `anon` / `service_role` key is used or exposed anywhere.
-- [ ] Cookies are `HttpOnly`, `Secure`, `SameSite=Lax`; CSRF header required on every write (verified by tests).
-- [ ] `ALLOWED_HOSTS`, `CSRF_TRUSTED_ORIGINS`, `CORS_ALLOWED_ORIGINS` list only your domains.
-- [ ] Super Admin account uses a strong, unique password; only platform staff have it.
-- [ ] Email provider configured (password resets depend on it) and SPF/DKIM set for your sending domain.
-- [ ] Backups scheduled and a restore has been tested once.
+- [ ] Cookies are `HttpOnly` + `Secure`; CSRF header required on every write.
+- [ ] `FRONTEND_ORIGIN` / `ALLOWED_HOSTS` list only your own domains.
+- [ ] The Super Admin uses a strong, unique password.
+- [ ] SMTP configured (password resets depend on it) with SPF/DKIM on your sending domain.
+- [ ] Backups scheduled and one restore tested.
 - [ ] Vercel plan matches your usage terms (commercial use).
-- [ ] Tenant isolation matrix and route guards pass in CI (`python manage.py test`).
+- [ ] `python manage.py test` passes (isolation matrix, route guards) before every release.

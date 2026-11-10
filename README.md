@@ -18,7 +18,7 @@ The browser only talks to the Next.js origin. The Next.js proxy (proxy.ts) proxi
 ## Repository layout
 
 ```
-backend/    Django project (config/, apps/, api/index.py = Vercel entrypoint)
+backend/    Django project (config/, apps/). Vercel runs config.wsgi.application (zero-config, see docs/DEPLOYMENT.md)
 frontend/   Next.js app (sirf project ki apni files; baqi "Frontend setup" ke commands se banti hain)
 docker-compose.yml   optional local dev (Postgres + backend + frontend, Docker Desktop)
 ```
